@@ -12,4 +12,4 @@ Check [INSTALLATION.md](./INSTALLATION.md)
 Check [CUSTOMIZATION.md](./CUSTOMIZATION.md)
 
 ## Fork
-This reposetory is a fork from [mdgaziur/findex](https://github.com/mdgaziur/findex). This version of findex list past searches higher depending on how often they were launched in the past.
+This repository is a fork from [mdgaziur/findex](https://github.com/mdgaziur/findex). This version of findex list past searches higher depending on how often they were launched in the past.
