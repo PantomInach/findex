@@ -2,6 +2,7 @@ use gtk::prelude::*;
 use gtk::{Entry, Label, ListBox, ScrolledWindow, Viewport};
 use nix::unistd::execvp;
 use std::ffi::CString;
+use crate::common::add_entry_to_searches;
 
 pub fn init_search_result() -> ListBox {
     let list_box = ListBox::builder().name("findex-results").build();
@@ -39,6 +40,14 @@ pub fn init_search_result() -> ListBox {
         let command = c_widget.downcast_ref::<Label>().unwrap();
 
         let splitted_cmd = shlex::split(&command.text().to_string()).unwrap();
+
+        let test = &lbr.children()[0];
+        let test0 = test.downcast_ref::<gtk::Box>().unwrap();
+        let test1 = &test0.children()[1];
+        let test2 = test1.downcast_ref::<Label>().unwrap();
+        let test3 = shlex::split(&test2.text().to_string()).unwrap();
+
+        add_entry_to_searches(&test3[0]);
 
         spawn_process(&splitted_cmd);
     });

@@ -3,6 +3,9 @@ use gtk::gdk_pixbuf::{Colorspace, Pixbuf};
 use gtk::pango::EllipsizeMode;
 use gtk::prelude::*;
 use gtk::{BoxBuilder, IconLookupFlags, IconTheme, Image, Label, ListBox, ListBoxRow, Orientation};
+use std::collections::HashMap;
+use serde_json;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone)]
 pub struct ScoredApp {
@@ -152,4 +155,44 @@ fn get_icon(icon_name: &str) -> Pixbuf {
     }
 
     icon
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(default)]
+pub struct Searches {
+    pub inner: HashMap<String, u16>,
+}
+
+impl Default for Searches {
+    fn default() -> Self {
+        Searches { 
+            inner: HashMap::new(),
+        }
+    }
+}
+
+pub fn add_entry_to_searches(name: &str) {
+    let searches_path = shellexpand::tilde("~/.config/findex/search_results.json");
+
+    let mut searches: HashMap<String, u16> = get_searches();
+    let calls = searches.entry(name.to_string()).or_insert(0);
+    *calls += 1;
+
+    let searches_write = serde_json::to_string(&searches).unwrap();
+    std::fs::write(&*searches_path, searches_write).unwrap();
+
+}
+
+pub fn get_searches() -> HashMap<String, u16> {
+    let searches_path = shellexpand::tilde("~/.config/findex/search_results.json");
+
+    let file = std::path::Path::new(&*searches_path);
+    if !file.exists() {
+        let searches = serde_json::to_string(&Searches::default().inner).unwrap();
+        std::fs::write(&*searches_path, searches).unwrap();
+    } 
+
+    let searches_data = std::fs::read_to_string(&*searches_path).unwrap();
+    let searches: HashMap<String, u16> = serde_json::from_str(&searches_data).unwrap();
+    return searches
 }

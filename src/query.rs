@@ -1,4 +1,5 @@
-use crate::common::{add_scored_app_to_listbox, AppInfo, ScoredApp};
+use std::collections::HashMap;
+use crate::common::{add_scored_app_to_listbox, get_searches, AppInfo, ScoredApp};
 use crate::config::FINDEX_CONFIG;
 use fuse_rust::Fuse;
 use gtk::gdk::EventKey;
@@ -93,6 +94,10 @@ fn on_text_changed(qb: &Entry, apps: &[AppInfo]) {
         }
     }
     filtered_apps.sort_by(|l, r| l.total_score.partial_cmp(&r.total_score).unwrap());
+
+    let searches : HashMap<String, u16> = get_searches();
+    
+    filtered_apps.sort_by(|l, r| searches.get(&r.name).or(Some(&0)).partial_cmp(&searches.get(&l.name).or(Some(&0))).unwrap());
 
     for app in filtered_apps {
         add_scored_app_to_listbox(&list_box, &app);
